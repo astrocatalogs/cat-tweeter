@@ -1,2 +1,4 @@
+export PATH="/root/miniconda3/bin:$PATH"
 source activate
-python /root/cat-tweeter/cat-tweeter.py
+cd /root/cat-tweeter
+python cat-tweeter.py
