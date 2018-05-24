@@ -1,19 +1,9 @@
-import argparse
-import gzip
+"""Tweet out a weekly summary of the most popular OAC objects."""
 import json
-import os
-import shutil
-import sys
-import urllib
 import time
-from collections import OrderedDict
-from glob import glob
-from requests.packages.urllib3.exceptions import ReadTimeoutError
+import urllib
 
 import tweepy
-from bs4 import BeautifulSoup
-from tqdm import tqdm
-
 
 nicename = {
     "sne": "supernova",
@@ -50,13 +40,16 @@ respj = json.loads(response.read().decode('utf-8'))
 objects = [x.strip() for x in respj['top5'].split(',')]
 
 # Which catalog are these objects from?
-response = urllib.request.urlopen('https://api.astrocats.space/{}/claimedtype+catalog'.format('+'.join(objects)))
+response = urllib.request.urlopen(
+    'https://api.astrocats.space/{}/claimedtype+catalog'.format(
+        '+'.join(objects)))
 respj = json.loads(response.read().decode('utf-8'))
 
 cats = [respj[x]['catalog'][0] for x in respj]
 nicecats = [nicename.get(x, '') for x in cats]
 
-types = [respj[x].get('claimedtype', [{'value':''}])[0].get('value', '') for x in respj]
+types = [respj[x].get('claimedtype', [{'value': ''}])[
+    0].get('value', '') for x in respj]
 types = ['Type ' + x if x != '' else x for x in types]
 
 obj_count = 5
@@ -70,7 +63,8 @@ while True:
 
         for oi, obj in enumerate(objects[:obj_count]):
             tweet_txt += '{} {}, {} {} http://{}.space/{}/{}'.format(
-                emojis[cats[oi]], obj, types[oi], nicecats[oi], urls[cats[oi]], cats[oi], obj)
+                emojis[cats[oi]], obj, types[oi], nicecats[oi],
+                urls[cats[oi]], cats[oi], obj)
             if oi < obj_count - 1:
                 tweet_txt += '\n'
 
@@ -84,4 +78,3 @@ while True:
             break
     except Exception:
         raise
-        
