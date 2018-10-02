@@ -81,7 +81,7 @@ while True:
 
         print(tweet_txt)
 
-        # api.update_status(tweet_txt)
+        api.update_status(tweet_txt)
         break
     except tweepy.error.TweepError:
         obj_count -= 1
